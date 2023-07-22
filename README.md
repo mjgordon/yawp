@@ -1,0 +1,2 @@
+Yet Another WYSIWYG Publisher
+=============================
