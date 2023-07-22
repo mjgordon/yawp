@@ -1,30 +1,34 @@
 package yawp;
 
+import javax.swing.JFrame;
+
 import processing.core.PApplet;
+import project.Project;
 
 public class YawpMain extends PApplet {
+	
+	public static Project activeProject;
+	
 	public void settings() {
 		size(800,600);
 	}
 	
 	public void setup() {
-		
+		// Maximize Window
 		surface.setResizable(true);
-		
 		javax.swing.JFrame jframe = (javax.swing.JFrame)((processing.awt.PSurfaceAWT.SmoothCanvas)getSurface().getNative()).getFrame();
 		jframe.setLocation(0, 0);
-		jframe.setExtendedState(jframe.getExtendedState() | jframe.MAXIMIZED_BOTH);
+		jframe.setExtendedState(jframe.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		delay(100);
 		
+		PAppletBridge.p = this;
 		
-		
-		
+		// Setup GUI controls
+		GUIControl.initialize(this);
 	}
 	
 	public void draw() {
-		System.out.println(width);
-		System.out.println(height);
-		background(0);
+		background(100);
 		stroke(255);
 		line(0,0,width,height);
 	}
