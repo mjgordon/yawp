@@ -3,7 +3,7 @@ package yawp;
 import controlP5.*;
 import java.io.File;
 import processing.core.PApplet;
-
+import processing.data.JSONObject;
 import project.Project;
 
 import static yawp.PAppletBridge.p;
@@ -25,11 +25,17 @@ public class GUIControl {
 	public static void initialize(PApplet pApplet) {
 		cp5 = new ControlP5(pApplet);
 		
-
-		tabProject = cp5.addTab("Project");
-
+		setupProjectTab();
 		setupNewProjectTab();
+		
+		cp5.getTab("default").setVisible(false);
 
+		tabProject.bringToFront();
+	}
+	
+	public static void setupProjectTab() {
+		tabProject = cp5.addTab("Project");
+		
 		cp5.addButton("buttonNewProject").setLabel("New Project")
 		.setPosition(100, 100)
 		.setSize(200, 50)
@@ -40,10 +46,16 @@ public class GUIControl {
 				tabNewProject.bringToFront();
 			}
 		});
-
-		cp5.getTab("default").setVisible(false);
-
-		tabProject.bringToFront();
+		
+		cp5.addButton("buttonLoadProject").setLabel("Load Project")
+		.setPosition(310, 100)
+		.setSize(200,50)
+		.moveTo(tabProject)
+		.onPress(new CallbackListener() {
+			public void controlEvent(CallbackEvent e) {
+				p.selectFolder("Open Project Directory","selectProjectDirectoryCallback", null, new GUIControl());
+			}
+		});
 	}
 	
 	public static void setupWorkspaceTab() {
@@ -61,7 +73,7 @@ public class GUIControl {
 		.moveTo(tabNewProject)
 		.onClick(new CallbackListener() {
 			public void controlEvent(CallbackEvent e) {
-				p.selectFolder("Select","selectNewProjectDirectoryCallback", null, new GUIControl());
+				p.selectFolder("Select New Project Directory","selectNewProjectDirectoryCallback", null, new GUIControl());
 			}
 		});
 		
@@ -101,7 +113,6 @@ public class GUIControl {
 					pageSize = "A4";
 				}
 				
-				System.out.println(pageSize);
 				if (name.equals("") || directory.equals("")) {
 					return;
 				}
@@ -123,17 +134,26 @@ public class GUIControl {
 
 	}
 	
+	
+	public void selectProjectDirectoryCallback(File selection) {
+		if (selection == null) {
+			return;
+		}
+		
+		JSONObject projectJSON = p.loadJSONObject(selection.getAbsolutePath() + "/project.json");
+		
+		if (projectJSON == null) {
+			return;
+		}
+		
+		YawpMain.activeProject = new Project(projectJSON, selection.getAbsolutePath());
+	}
+	
+	
 	public void selectNewProjectDirectoryCallback(File selection) {
 		if (selection == null) {
 			return;
 		}
 		cp5.get("labelCurrentProjectDirectory").setStringValue(selection.getAbsolutePath());
-	}
-	
-	
-
-
-	public void buttonNewProject() {
-
 	}
 }

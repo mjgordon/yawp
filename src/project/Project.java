@@ -15,12 +15,23 @@ public class Project {
 	private ArrayList<Page> pages;
 	
 	public Project(String name, String directory) {
-		System.out.println(name);
-		System.out.println(directory);
 		this.name = name;
 		this.directory = directory;
 		
 		pages = new ArrayList<Page>();
+	}
+	
+	public Project(JSONObject input, String filepath) {
+		this.name = input.getString("projectName");
+		this.directory = filepath;
+		
+		pages = new ArrayList<Page>();
+		input.getJSONArray(filepath);
+		
+		JSONArray pagesArray = input.getJSONArray("pages");
+		for (int i = 0; i < pagesArray.size(); i++) {
+			pages.add(new Page(pagesArray.getJSONObject(i)));
+		}
 	}
 	
 	public void saveToDisk() {
