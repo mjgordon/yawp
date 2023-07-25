@@ -10,7 +10,7 @@ public class YawpMain extends PApplet {
 	
 	public static Project activeProject;
 	
-	public static JSONObject config;
+
 	
 	public void settings() {
 		size(800,600);
@@ -26,7 +26,7 @@ public class YawpMain extends PApplet {
 		
 		PAppletBridge.p = this;
 		
-		config = this.loadJSONObject("config.json");
+		Config.loadConfig();
 		
 		// Setup GUI controls
 		GUIControl.initialize(this);
