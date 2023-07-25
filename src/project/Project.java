@@ -64,7 +64,7 @@ public class Project {
 
 	public void exportToPDF() {
 		String pdfLatexPath = Config.getString("export.pdflatex.path");
-		String latexPath = projectRootDirectory + "output_latex/" + name + ".tex";
+		String latexPath = projectRootDirectory + "/output_latex/" + name + ".tex";
 		String pdfPath = "output_pdf/"; // Must be local path
 
 		String[] latex = getLatexRepresentation();

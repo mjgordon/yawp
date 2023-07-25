@@ -18,4 +18,11 @@ public class Config {
 		}
 		return out;
 	}
+	
+	public static int getColor(String input) {
+		return (int) Long.parseLong(configJSON.getString(input), 16);
+		//return Integer.parseInt(configJSON.getString(input),16);
+		
+
+	}
 }

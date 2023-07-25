@@ -21,9 +21,18 @@ public class GUIControl {
 	private static Tab tabWorkspace;
 	private static Tab tabNewProject;
 	
+	public static int colorGUIBG;
+	public static int colorGUIMain;
+	
 
 	public static void initialize(PApplet pApplet) {
 		cp5 = new ControlP5(pApplet,YawpMain.font);
+		
+		setupColors();
+		cp5.setColorBackground(colorGUIMain);
+		cp5.setBackground(colorGUIMain);
+		
+		
 		
 		setupProjectTab();
 		setupWorkspaceTab();
@@ -35,15 +44,18 @@ public class GUIControl {
 	}
 	
 	
-	public static void setupProjectTab() {
-		tabProject = cp5.addTab("Project");
+	private static void setupProjectTab() {
+		tabProject = cp5.addTab("Project")
+				.setColorBackground(colorGUIBG)
+				.setColorActive(colorGUIMain);
 		
 		Group group = cp5.addGroup("groupProject")
 				.setLabel("")
 				.setPosition(100,100)
 				.setWidth(120)
 				.setBackgroundHeight(200)
-				.setBackgroundColor(0)
+				.setBackgroundColor(colorGUIBG)
+				
 				.disableCollapse()
 				.moveTo(tabProject);
 		
@@ -74,8 +86,10 @@ public class GUIControl {
 	}
 	
 	
-	public static void setupWorkspaceTab() {
-		tabWorkspace = cp5.addTab("Workspace");
+	private static void setupWorkspaceTab() {
+		tabWorkspace = cp5.addTab("Workspace")
+				.setColorBackground(colorGUIBG)
+				.setColorActive(colorGUIMain);
 		
 		cp5.addButton("buttonExport")
 		.setLabel("Export to PDF")
@@ -92,27 +106,19 @@ public class GUIControl {
 	}
 
 
-	public static void setupNewProjectTab() {
-		tabNewProject = cp5.addTab("New Project");
+	private static void setupNewProjectTab() {
+		tabNewProject = cp5.addTab("New Project")
+				.setColorBackground(colorGUIBG)
+				.setColorActive(colorGUIMain);
 		
 		Group group = cp5.addGroup("groupNewProject")
 				.setLabel("")
 				.setPosition(800,200)
 				.setWidth(400)
-				.setBackgroundHeight(400)	
+				.setBackgroundHeight(400)
+				.setBackgroundColor(colorGUIBG)
 				.disableCollapse()
-				.setBackgroundColor(0)
 				.moveTo(tabNewProject);
-		/*
-		Group group = cp5.addGroup("groupProject")
-				.setLabel("")
-				.setPosition(100,100)
-				.setWidth(120)
-				.setBackgroundHeight(200)
-				.setBackgroundColor(0)
-				.disableCollapse()
-				.moveTo(tabProject);
-				*/
 		
 		GUIWrapper wrapper = new GUIWrapper(group);
 		
@@ -131,7 +137,6 @@ public class GUIControl {
 		.setText("")
 		.setSize(200,20)
 		.setColorValue(0xFFFFFFFF)
-		.setColorBackground(0xFFAAAAAA)
 		.moveTo(tabNewProject)
 		.setGroup(group);
 		
@@ -183,6 +188,8 @@ public class GUIControl {
 			}
 		});
 		
+		dropdownPageSize.bringToFront();
+		
 		wrapper.flow(buttonSelectProjectDirectory);
 		wrapper.flow(labelCurrentProjectDirectory);
 		wrapper.flow(textfieldProjectName);
@@ -217,6 +224,12 @@ public class GUIControl {
 			return;
 		}
 		cp5.get("labelCurrentProjectDirectory").setStringValue(selection.getAbsolutePath());
+	}
+	
+	private static void setupColors() {
+
+		colorGUIBG = Config.getColor("gui.colors.bg");
+		colorGUIMain = Config.getColor("gui.colors.main");
 	}
 	
 }
