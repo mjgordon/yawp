@@ -14,6 +14,7 @@ import static yawp.PAppletBridge.p;
  * controlP5
  *
  */
+
 public class GUIControl {
 	private static ControlP5 cp5;
 	private static Tab tabProject;
@@ -37,26 +38,39 @@ public class GUIControl {
 	public static void setupProjectTab() {
 		tabProject = cp5.addTab("Project");
 		
-		cp5.addButton("buttonNewProject").setLabel("New Project")
-		.setPosition(100, 100)
-		.setSize(200, 50)
+		Group group = cp5.addGroup("groupProject")
+				.setLabel("")
+				.setPosition(100,100)
+				.setWidth(120)
+				.setBackgroundHeight(200)
+				.setBackgroundColor(0)
+				.disableCollapse()
+				.moveTo(tabProject);
+		
+		Button buttonNewProject = cp5.addButton("buttonNewProject").setLabel("New Project")
+		.setSize(100, 20)
 		.moveTo(tabProject)
-		.onPress(new CallbackListener() {
+		.setGroup(group)
+		.onClick(new CallbackListener() {
 			public void controlEvent(CallbackEvent e) {
 				tabNewProject.setVisible(true);
 				tabNewProject.bringToFront();
 			}
 		});
 		
-		cp5.addButton("buttonLoadProject").setLabel("Load Project")
-		.setPosition(310, 100)
-		.setSize(200,50)
+		Button buttonLoadProject = cp5.addButton("buttonLoadProject").setLabel("Load Project")
+		.setSize(100,20)
 		.moveTo(tabProject)
-		.onPress(new CallbackListener() {
+		.setGroup(group)
+		.onClick(new CallbackListener() {
 			public void controlEvent(CallbackEvent e) {
 				p.selectFolder("Open Project Directory","selectProjectDirectoryCallback", null, new GUIControl());
 			}
 		});
+		
+		GUIWrapper wrapper = new GUIWrapper(group);
+		wrapper.flow(buttonNewProject);
+		wrapper.flow(buttonLoadProject);
 	}
 	
 	
@@ -81,11 +95,32 @@ public class GUIControl {
 	public static void setupNewProjectTab() {
 		tabNewProject = cp5.addTab("New Project");
 		
-		cp5.addButton("buttonSelectProjectDirectory")
+		Group group = cp5.addGroup("groupNewProject")
+				.setLabel("")
+				.setPosition(800,200)
+				.setWidth(400)
+				.setBackgroundHeight(400)	
+				.disableCollapse()
+				.setBackgroundColor(0)
+				.moveTo(tabNewProject);
+		/*
+		Group group = cp5.addGroup("groupProject")
+				.setLabel("")
+				.setPosition(100,100)
+				.setWidth(120)
+				.setBackgroundHeight(200)
+				.setBackgroundColor(0)
+				.disableCollapse()
+				.moveTo(tabProject);
+				*/
+		
+		GUIWrapper wrapper = new GUIWrapper(group);
+		
+		Button buttonSelectProjectDirectory = cp5.addButton("buttonSelectProjectDirectory")
 		.setLabel("Select Directory")
-		.setPosition(100, 100)
-		.setSize(100, 50)
+		.setSize(200, 20)
 		.moveTo(tabNewProject)
+		.setGroup(group)
 		.onClick(new CallbackListener() {
 			public void controlEvent(CallbackEvent e) {
 				p.selectFolder("Select New Project Directory","selectNewProjectDirectoryCallback", null, new GUIControl());
@@ -94,31 +129,35 @@ public class GUIControl {
 		
 		Textlabel labelCurrentProjectDirectory = cp5.addTextlabel("labelCurrentProjectDirectory")
 		.setText("")
-		.setPosition(205,100)
+		.setSize(200,20)
 		.setColorValue(0xFFFFFFFF)
-		.moveTo(tabNewProject);
+		.setColorBackground(0xFFAAAAAA)
+		.moveTo(tabNewProject)
+		.setGroup(group);
 		
 		Textfield textfieldProjectName = cp5.addTextfield("textfieldProjectName")
-		.setSize(200,50)
-		.setPosition(100,160)
+		.setSize(200,20)
 		.setLabel("Project Name")
 		.moveTo(tabNewProject)
+		.setValueLabel("yo")
+		.setGroup(group)
 		.setAutoClear(false);
 		
 		DropdownList dropdownPageSize = cp5.addDropdownList("dropdownPageSize")
-				.setSize(200,100)
-				.setPosition(500,100)
+				.setWidth(200)
+				.setBarHeight(20)
 				.setLabel("Default Page Size")
 				.addItem("A3","A3")
 				.addItem("A4","A4")
 				.moveTo(tabNewProject)
+				.setGroup(group)
 				.close();
 		
-		cp5.addButton("buttonNewProjectFinalize")
-		.setSize(100,100)
-		.setPosition(100,270)
+		Button buttonNewProjectFinalize = cp5.addButton("buttonNewProjectFinalize")
+		.setSize(200,20)
 		.setLabel("Create Project")
 		.moveTo(tabNewProject)
+		.setGroup(group)
 		.onPress(new CallbackListener() {
 			public void controlEvent(CallbackEvent e) {
 				String name = textfieldProjectName.getText();
@@ -143,6 +182,13 @@ public class GUIControl {
 				tabNewProject.setVisible(false);
 			}
 		});
+		
+		wrapper.flow(buttonSelectProjectDirectory);
+		wrapper.flow(labelCurrentProjectDirectory);
+		wrapper.flow(textfieldProjectName);
+		wrapper.newLine(50);
+		wrapper.flow(dropdownPageSize);
+		wrapper.flow(buttonNewProjectFinalize);
 			
 		tabNewProject.setVisible(false);
 	}
@@ -172,4 +218,5 @@ public class GUIControl {
 		}
 		cp5.get("labelCurrentProjectDirectory").setStringValue(selection.getAbsolutePath());
 	}
+	
 }
