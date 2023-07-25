@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import processing.data.JSONArray;
 import processing.data.JSONObject;
 import yawp.Config;
-import yawp.YawpMain;
 
 public class Project {
 

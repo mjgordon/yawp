@@ -5,3 +5,4 @@ bin/
 lib/
 
 config.json
+data/*.vlw

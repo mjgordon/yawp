@@ -22,7 +22,7 @@ public class GUIControl {
 	
 
 	public static void initialize(PApplet pApplet) {
-		cp5 = new ControlP5(pApplet);
+		cp5 = new ControlP5(pApplet,YawpMain.font);
 		
 		setupProjectTab();
 		setupWorkspaceTab();
@@ -140,7 +140,7 @@ public class GUIControl {
 				
 				tabWorkspace.setVisible(true);
 				tabWorkspace.bringToFront();
-				tabNewProject.setVisible(false);		
+				tabNewProject.setVisible(false);
 			}
 		});
 			

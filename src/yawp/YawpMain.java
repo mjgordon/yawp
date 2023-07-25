@@ -3,12 +3,14 @@ package yawp;
 import javax.swing.JFrame;
 
 import processing.core.PApplet;
-import processing.data.JSONObject;
+import processing.core.PFont;
 import project.Project;
 
 public class YawpMain extends PApplet {
 	
 	public static Project activeProject;
+	
+	public static PFont font;
 	
 
 	
@@ -25,6 +27,8 @@ public class YawpMain extends PApplet {
 		delay(100);
 		
 		PAppletBridge.p = this;
+		
+		font = this.loadFont("LiberationSans-12.vlw");
 		
 		Config.loadConfig();
 		
