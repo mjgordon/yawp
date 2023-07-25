@@ -2,10 +2,16 @@ package project;
 
 import static yawp.PAppletBridge.p;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import processing.data.JSONArray;
 import processing.data.JSONObject;
+import yawp.YawpMain;
 
 public class Project {
 	
@@ -34,6 +40,14 @@ public class Project {
 		}
 	}
 	
+	
+	public void addPage(String size) {
+		if (Page.pageSizes.containsKey(size)) {
+			pages.add(new Page(Page.pageSizes.get(size)));
+		}
+	}
+	
+	
 	public void saveToDisk() {
 		JSONObject output = new JSONObject();
 		output.setString("projectName",name);
@@ -49,10 +63,47 @@ public class Project {
 		p.saveJSONObject(output, directory + "/" + name + "/project.json");
 	}
 	
-	public void addPage(String size) {
-		if (Page.pageSizes.containsKey(size)) {
-			pages.add(new Page(Page.pageSizes.get(size)));
+	public void exportToPDF() {
+		String pdfLatexPath = YawpMain.config.getString("export.pdflatex.path");
+		String latexPath = directory + "/output_latex/" + name + ".tex";
+		String pdfPath = "output_pdf/";
+		
+		String[] latex = getLatexRepresentation();
+		p.saveStrings(latexPath, latex);
+		
+		try {
+			ProcessBuilder pb = new ProcessBuilder(pdfLatexPath,"-output-directory=" + pdfPath, latexPath);
+			pb.redirectOutput(Redirect.INHERIT);
+			pb.redirectError(Redirect.INHERIT);
+			pb.directory(new File(directory));
+			Process process = pb.start();
+			System.out.println(pb.command());
+			
+			int exitValue = process.waitFor();
+			System.out.println("pdflatex export exit value : " + exitValue);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		
 	}
+	
+	private String[] getLatexRepresentation() {
+		ArrayList<String> out = new ArrayList<String>();
+		
+		out.add("\\documentclass{article}");
+		out.add("\\begin{document}");
+		out.add("\\LaTeX{}");
+		
+		out.add("\\end{document}");
+		
+		
+		return out.toArray(new String[out.size()]);
+	}
+	
+	
 
 }

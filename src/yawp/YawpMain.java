@@ -3,11 +3,14 @@ package yawp;
 import javax.swing.JFrame;
 
 import processing.core.PApplet;
+import processing.data.JSONObject;
 import project.Project;
 
 public class YawpMain extends PApplet {
 	
 	public static Project activeProject;
+	
+	public static JSONObject config;
 	
 	public void settings() {
 		size(800,600);
@@ -22,6 +25,8 @@ public class YawpMain extends PApplet {
 		delay(100);
 		
 		PAppletBridge.p = this;
+		
+		config = this.loadJSONObject("config.json");
 		
 		// Setup GUI controls
 		GUIControl.initialize(this);

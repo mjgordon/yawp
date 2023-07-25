@@ -9,29 +9,30 @@ import project.Project;
 import static yawp.PAppletBridge.p;
 
 
-
 /**
- * Abstraction over interface elements such as buttons, sliders, etc. Using
+ * Setup for interface elements such as buttons, sliders, etc. Using
  * controlP5
  *
  */
 public class GUIControl {
 	private static ControlP5 cp5;
 	private static Tab tabProject;
+	private static Tab tabWorkspace;
 	private static Tab tabNewProject;
 	
-
 
 	public static void initialize(PApplet pApplet) {
 		cp5 = new ControlP5(pApplet);
 		
 		setupProjectTab();
+		setupWorkspaceTab();
 		setupNewProjectTab();
 		
 		cp5.getTab("default").setVisible(false);
 
 		tabProject.bringToFront();
 	}
+	
 	
 	public static void setupProjectTab() {
 		tabProject = cp5.addTab("Project");
@@ -58,8 +59,22 @@ public class GUIControl {
 		});
 	}
 	
+	
 	public static void setupWorkspaceTab() {
+		tabWorkspace = cp5.addTab("Workspace");
 		
+		cp5.addButton("buttonExport")
+		.setLabel("Export to PDF")
+		.setPosition(100,100)
+		.setSize(100,50)
+		.moveTo(tabWorkspace)
+		.onClick(new CallbackListener() {
+			public void controlEvent(CallbackEvent e) {
+				YawpMain.activeProject.exportToPDF();
+			}
+		});
+		
+		tabWorkspace.setVisible(false);
 	}
 
 
@@ -123,15 +138,13 @@ public class GUIControl {
 				textfieldProjectName.setText("");
 				labelCurrentProjectDirectory.setText("");
 				
-				tabProject.bringToFront();
+				tabWorkspace.setVisible(true);
+				tabWorkspace.bringToFront();
 				tabNewProject.setVisible(false);		
 			}
 		});
-		
-		
-		
+			
 		tabNewProject.setVisible(false);
-
 	}
 	
 	
@@ -147,6 +160,9 @@ public class GUIControl {
 		}
 		
 		YawpMain.activeProject = new Project(projectJSON, selection.getAbsolutePath());
+		
+		tabWorkspace.setVisible(true);
+		tabWorkspace.bringToFront();
 	}
 	
 	
