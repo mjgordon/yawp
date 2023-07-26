@@ -14,6 +14,8 @@ public class Project {
 
 	private String name;
 	private String projectRootDirectory;
+	
+	private ArrayList<PDImage> images;
 
 	private ArrayList<Page> pages;
 
@@ -23,6 +25,8 @@ public class Project {
 		this.projectRootDirectory = directory;
 
 		pages = new ArrayList<Page>();
+		
+		images = new ArrayList<PDImage>();
 	}
 
 
@@ -44,6 +48,10 @@ public class Project {
 		if (Page.pageSizes.containsKey(size)) {
 			pages.add(new Page(Page.pageSizes.get(size)));
 		}
+	}
+	
+	public Page getPage(int n) {
+		return pages.get(n);
 	}
 
 

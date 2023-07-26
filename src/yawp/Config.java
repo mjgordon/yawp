@@ -11,6 +11,7 @@ public class Config {
 		configJSON = p.loadJSONObject("config.json");
 	}
 	
+	
 	public static String getString(String input) {
 		String out = configJSON.getString(input);
 		if (out == null) {
@@ -19,10 +20,8 @@ public class Config {
 		return out;
 	}
 	
+	
 	public static int getColor(String input) {
 		return (int) Long.parseLong(configJSON.getString(input), 16);
-		//return Integer.parseInt(configJSON.getString(input),16);
-		
-
 	}
 }

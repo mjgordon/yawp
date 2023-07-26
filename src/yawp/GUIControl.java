@@ -98,7 +98,7 @@ public class GUIControl {
 		.moveTo(tabWorkspace)
 		.onClick(new CallbackListener() {
 			public void controlEvent(CallbackEvent e) {
-				YawpMain.activeProject.exportToPDF();
+				YawpMain.getProject().exportToPDF();
 			}
 		});
 		
@@ -175,9 +175,10 @@ public class GUIControl {
 				if (name.equals("") || directory.equals("")) {
 					return;
 				}
-				YawpMain.activeProject = new Project(name,directory);
-				YawpMain.activeProject.addPage(pageSize);
-				YawpMain.activeProject.saveToDisk();
+				Project project = new Project(name,directory);
+				YawpMain.setProject(project);
+				project.addPage(pageSize);
+				project.saveToDisk();
 				
 				textfieldProjectName.setText("");
 				labelCurrentProjectDirectory.setText("");
@@ -212,7 +213,7 @@ public class GUIControl {
 			return;
 		}
 		
-		YawpMain.activeProject = new Project(projectJSON, selection.getAbsolutePath());
+		YawpMain.setProject(new Project(projectJSON, selection.getAbsolutePath()));
 		
 		tabWorkspace.setVisible(true);
 		tabWorkspace.bringToFront();

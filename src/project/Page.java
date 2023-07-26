@@ -7,6 +7,8 @@ import processing.data.JSONObject;
 
 import static java.util.Map.entry;
 
+import static yawp.PAppletBridge.p;
+
 
 public class Page {
 	
@@ -28,9 +30,9 @@ public class Page {
 	}
 	
 	
-	public void render(PGraphics g) {
-		g.fill(255);
-		g.rect(0,0,dimensions.x,dimensions.y);	
+	public void render() {
+		p.fill(255);
+		p.rect(0,0,dimensions.x,dimensions.y);	
 	}
 	
 	
