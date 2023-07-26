@@ -1,7 +1,6 @@
 package project;
 
 import java.util.Map;
-import processing.core.PGraphics;
 import processing.core.PVector;
 import processing.data.JSONObject;
 
@@ -15,7 +14,7 @@ public class Page {
 	private PVector dimensions;
 	
 	
-	public static Map<String, PVector> pageSizes = Map.ofEntries(
+	public static final Map<String, PVector> pageSizes = Map.ofEntries(
 			entry("A3",new PVector(297,420)),
 			entry("A4",new PVector(210,297)));
 					
@@ -43,5 +42,13 @@ public class Page {
 		output.setFloat("dimensionsY", dimensions.y);
 		
 		return output;
+	}
+	
+	public float getWidth() {
+		return dimensions.x;
+	}
+	
+	public float getHeight() {
+		return dimensions.y;
 	}
 }

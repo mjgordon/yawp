@@ -4,6 +4,7 @@ import javax.swing.JFrame;
 
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.event.MouseEvent;
 import project.Project;
 
 public class YawpMain extends PApplet {
@@ -81,6 +82,11 @@ public class YawpMain extends PApplet {
 	
 	public void mouseDragged() {
 		activeEditor.mouseDragged();
+	}
+	
+	
+	public void mouseWheel(MouseEvent event) {
+		 activeEditor.mouseWheel(event.getCount());
 	}
 
 
