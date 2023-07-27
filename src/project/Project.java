@@ -71,7 +71,7 @@ public class Project {
 
 
 	public void exportToPDF() {
-		String pdfLatexPath = Config.getString("export.pdflatex.path");
+		String pdfLatexPath = Config.getUserString("export.pdflatex.path");
 		String latexPath = projectRootDirectory + "/output_latex/" + name + ".tex";
 		String pdfPath = "output_pdf/"; // Must be local path
 
@@ -110,6 +110,16 @@ public class Project {
 		out.add("\\end{document}");
 
 		return out.toArray(new String[out.size()]);
+	}
+	
+	
+	public String getName() {
+		return name;
+	}
+	
+	
+	public String getDirectory() {
+		return projectRootDirectory;
 	}
 
 }

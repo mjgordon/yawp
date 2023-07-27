@@ -52,7 +52,7 @@ public class GUIControl {
 		Group group = cp5.addGroup("groupProject")
 				.setLabel("")
 				.setPosition(100,100)
-				.setWidth(120)
+				.setWidth(170)
 				.setBackgroundHeight(200)
 				.setBackgroundColor(colorGUIBG)
 				
@@ -60,7 +60,7 @@ public class GUIControl {
 				.moveTo(tabProject);
 		
 		Button buttonNewProject = cp5.addButton("buttonNewProject").setLabel("New Project")
-		.setSize(100, 20)
+		.setSize(150, 20)
 		.moveTo(tabProject)
 		.setGroup(group)
 		.onClick(new CallbackListener() {
@@ -71,7 +71,7 @@ public class GUIControl {
 		});
 		
 		Button buttonLoadProject = cp5.addButton("buttonLoadProject").setLabel("Load Project")
-		.setSize(100,20)
+		.setSize(150,20)
 		.moveTo(tabProject)
 		.setGroup(group)
 		.onClick(new CallbackListener() {
@@ -80,9 +80,21 @@ public class GUIControl {
 			}
 		});
 		
+		Button buttonLoadLast = cp5.addButton("buttonLoadLast").setLabel("Load Last Project")
+				.setSize(150,20)
+				.moveTo(tabProject)
+				.setGroup(group)
+				.onClick(new CallbackListener() {
+					public void controlEvent(CallbackEvent e) {
+						JSONObject lastProject = Config.getUserObject("lastProject");
+						loadProject(lastProject.getString("project.directory"));
+					}
+				});
+		
 		GUIWrapper wrapper = new GUIWrapper(group);
 		wrapper.flow(buttonNewProject);
 		wrapper.flow(buttonLoadProject);
+		wrapper.flow(buttonLoadLast);
 	}
 	
 	
@@ -90,6 +102,26 @@ public class GUIControl {
 		tabWorkspace = cp5.addTab("Workspace")
 				.setColorBackground(colorGUIBG)
 				.setColorActive(colorGUIMain);
+		
+		Group groupLeft = cp5.addGroup("groupWorkspaceLeft")
+				.setLabel("Document")
+				.setPosition(10,10)
+				.setSize(300, p.height - 20)
+				.disableCollapse()
+				.moveTo(tabWorkspace);
+		
+		Group groupRight = cp5.addGroup("groupWorkspaceRight")
+				.setLabel("Editor")
+				.setPosition(p.width - 300 - 10,10)
+				.setSize(300, p.height - 20)
+				.setWidth(120)
+				.setBackgroundHeight(200)
+				.setBackgroundColor(colorGUIBG)
+				
+				.disableCollapse()
+				.moveTo(tabWorkspace);
+		
+		
 		
 		cp5.addButton("buttonExport")
 		.setLabel("Export to PDF")
@@ -207,16 +239,31 @@ public class GUIControl {
 			return;
 		}
 		
-		JSONObject projectJSON = p.loadJSONObject(selection.getAbsolutePath() + "/project.json");
+		Project project = loadProject(selection.getAbsolutePath());
+		
+		JSONObject lastOpened = new JSONObject();
+		lastOpened.setString("project.name", project.getName());
+		lastOpened.setString("project.directory",project.getDirectory());
+		
+		Config.setUserObject("lastProject", lastOpened);
+		Config.saveUserConfig();
+	}
+	
+	public static Project loadProject(String path) {
+		JSONObject projectJSON = p.loadJSONObject(path + "/project.json");
 		
 		if (projectJSON == null) {
-			return;
+			return null;
 		}
 		
-		YawpMain.setProject(new Project(projectJSON, selection.getAbsolutePath()));
+		Project project = new Project(projectJSON, path);
+		
+		YawpMain.setProject(project);
 		
 		tabWorkspace.setVisible(true);
 		tabWorkspace.bringToFront();
+		
+		return project;
 	}
 	
 	

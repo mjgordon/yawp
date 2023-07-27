@@ -4,5 +4,5 @@
 bin/
 lib/
 
-config.json
+config_user.json
 data/*.vlw
