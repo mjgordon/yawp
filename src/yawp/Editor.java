@@ -15,6 +15,8 @@ public class Editor {
 	private PVector viewOffset;
 
 	private float scale = 1;
+	
+	private EditorMode mode = EditorMode.SELECT;
 
 
 	public Editor() {

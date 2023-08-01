@@ -2,8 +2,12 @@ package yawp;
 
 import controlP5.*;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.function.Consumer;
+
 import processing.core.PApplet;
 import processing.data.JSONObject;
+import project.PDImage;
 import project.Project;
 
 import static yawp.PAppletBridge.p;
@@ -23,6 +27,11 @@ public class GUIControl {
 	
 	public static int colorGUIBG;
 	public static int colorGUIMain;
+	public static int colorGUIBGLight;
+	
+	public static Consumer<Project> regenerateImageDataList;
+	
+	public static int tempCounter = 0;
 	
 
 	public static void initialize(PApplet pApplet) {
@@ -51,7 +60,7 @@ public class GUIControl {
 		
 		Group group = cp5.addGroup("groupProject")
 				.setLabel("")
-				.setPosition(100,100)
+				.setPosition(10,30)
 				.setWidth(170)
 				.setBackgroundHeight(200)
 				.setBackgroundColor(colorGUIBG)
@@ -105,36 +114,103 @@ public class GUIControl {
 		
 		Group groupLeft = cp5.addGroup("groupWorkspaceLeft")
 				.setLabel("Document")
-				.setPosition(10,10)
-				.setSize(300, p.height - 20)
+				.setPosition(10,30)
+				.setSize(300, p.height - 40)
+				.setBackgroundColor(colorGUIBG)
 				.disableCollapse()
 				.moveTo(tabWorkspace);
 		
 		Group groupRight = cp5.addGroup("groupWorkspaceRight")
 				.setLabel("Editor")
-				.setPosition(p.width - 300 - 10,10)
-				.setSize(300, p.height - 20)
-				.setWidth(120)
-				.setBackgroundHeight(200)
+				.setPosition(p.width - 300 - 10,30)
+				.setSize(300, p.height - 40)
 				.setBackgroundColor(colorGUIBG)
-				
 				.disableCollapse()
 				.moveTo(tabWorkspace);
 		
+		Button buttonExport = cp5.addButton("buttonExport")
+				.setLabel("Export to PDF")
+				.setSize(100,50)
+				.moveTo(tabWorkspace)
+				.setGroup(groupLeft)
+				.onClick(new CallbackListener() {
+					public void controlEvent(CallbackEvent e) {
+						YawpMain.getProject().saveToDisk();
+						YawpMain.getProject().exportToPDF();
+					}
+				});
+		
+		Button buttonSaveProject = cp5.addButton("buttonSaveProject")
+				.setLabel("Save Project")
+				.setSize(100,50)
+				.moveTo(tabWorkspace)
+				.setGroup(groupLeft)
+				.onClick(new CallbackListener() {
+					public void controlEvent(CallbackEvent e) {
+						YawpMain.getProject().saveToDisk();
+					}
+				});
+		
+		GUIWrapper guiWrapperLeft = new GUIWrapper(groupLeft);
+		guiWrapperLeft.flow(buttonSaveProject);
+		guiWrapperLeft.flow(buttonExport);
+		
+		Button buttonAddImage = cp5.addButton("buttonAddImage")
+				.setLabel("Add Image")
+				.setPosition(100,100)
+				.setSize(100,50)
+				.moveTo(tabWorkspace)
+				.setGroup(groupRight)
+				.onClick(new CallbackListener() {
+					public void controlEvent(CallbackEvent e) {
+						p.selectInput("Select Image","selectImageCallback", null, new GUIControl());
+					}
+				});
+		
+		Group groupImageData = cp5.addGroup("groupImageData")
+				.setLabel("Project Images")
+				.setSize(groupRight.getWidth() - 20, 200)
+				.setBackgroundColor(colorGUIBGLight)
+				.moveTo(tabWorkspace)
+				.setGroup(groupRight)
+				.setBackgroundHeight(100);
+		
+		GUIScroll guiScrollImageData = new GUIScroll(groupImageData,120,4);
 		
 		
-		cp5.addButton("buttonExport")
-		.setLabel("Export to PDF")
-		.setPosition(100,100)
-		.setSize(100,50)
-		.moveTo(tabWorkspace)
-		.onClick(new CallbackListener() {
-			public void controlEvent(CallbackEvent e) {
-				YawpMain.getProject().exportToPDF();
+		regenerateImageDataList = project -> {
+			guiScrollImageData.clear();
+			ArrayList<PDImage> imageData = project.getImageDataList();
+			
+			for (PDImage pdi : imageData) {
+				Button button = cp5.addButton("buttonImage_" + tempCounter())
+						.setLabel("")
+						.setSize(120,120)
+						.moveTo(tabWorkspace)
+						.setGroup(groupImageData)
+						.onClick(new CallbackListener() {
+							public void controlEvent(CallbackEvent e) {
+								System.out.println("button!");
+							}
+						})
+						.setImages(pdi.getIcons());
+				
+				guiScrollImageData.add(button);
 			}
-		});
+			guiScrollImageData.scroll(0);
+		};
 		
+		GUIWrapper guiWrapperRight = new GUIWrapper(groupRight);
+		guiWrapperRight.flow(buttonAddImage);
+		guiWrapperRight.flow(groupImageData);
+		
+		
+			
+		
+	
 		tabWorkspace.setVisible(false);
+		
+		
 	}
 
 
@@ -155,30 +231,30 @@ public class GUIControl {
 		GUIWrapper wrapper = new GUIWrapper(group);
 		
 		Button buttonSelectProjectDirectory = cp5.addButton("buttonSelectProjectDirectory")
-		.setLabel("Select Directory")
-		.setSize(200, 20)
-		.moveTo(tabNewProject)
-		.setGroup(group)
-		.onClick(new CallbackListener() {
-			public void controlEvent(CallbackEvent e) {
-				p.selectFolder("Select New Project Directory","selectNewProjectDirectoryCallback", null, new GUIControl());
-			}
-		});
+				.setLabel("Select Directory")
+				.setSize(200, 20)
+				.moveTo(tabNewProject)
+				.setGroup(group)
+				.onClick(new CallbackListener() {
+					public void controlEvent(CallbackEvent e) {
+						p.selectFolder("Select New Project Directory","selectNewProjectDirectoryCallback", null, new GUIControl());
+					}
+				});
 		
 		Textlabel labelCurrentProjectDirectory = cp5.addTextlabel("labelCurrentProjectDirectory")
-		.setText("")
-		.setSize(200,20)
-		.setColorValue(0xFFFFFFFF)
-		.moveTo(tabNewProject)
-		.setGroup(group);
+				.setText("")
+				.setSize(200,20)
+				.setColorValue(0xFFFFFFFF)
+				.moveTo(tabNewProject)
+				.setGroup(group);
 		
 		Textfield textfieldProjectName = cp5.addTextfield("textfieldProjectName")
-		.setSize(200,20)
-		.setLabel("Project Name")
-		.moveTo(tabNewProject)
-		.setValueLabel("yo")
-		.setGroup(group)
-		.setAutoClear(false);
+				.setSize(200,20)
+				.setLabel("Project Name")
+				.moveTo(tabNewProject)
+				.setValueLabel("yo")
+				.setGroup(group)
+				.setAutoClear(false);
 		
 		DropdownList dropdownPageSize = cp5.addDropdownList("dropdownPageSize")
 				.setWidth(200)
@@ -191,37 +267,38 @@ public class GUIControl {
 				.close();
 		
 		Button buttonNewProjectFinalize = cp5.addButton("buttonNewProjectFinalize")
-		.setSize(200,20)
-		.setLabel("Create Project")
-		.moveTo(tabNewProject)
-		.setGroup(group)
-		.onPress(new CallbackListener() {
-			public void controlEvent(CallbackEvent e) {
-				String name = textfieldProjectName.getText();
-				String directory = labelCurrentProjectDirectory.getStringValue();
-				String pageSize = dropdownPageSize.getLabel();
-				if (pageSize.equals("Default Page Size")) {
-					pageSize = "A4";
-				}
+				.setSize(200,20)
+				.setLabel("Create Project")
+				.moveTo(tabNewProject)
+				.setGroup(group)
+				.onPress(new CallbackListener() {
+					public void controlEvent(CallbackEvent e) {
+						String name = textfieldProjectName.getText();
+						String directory = labelCurrentProjectDirectory.getStringValue();
+						String pageSize = dropdownPageSize.getLabel();
+						if (pageSize.equals("Default Page Size")) {
+							pageSize = "A4";
+						}
 				
-				if (name.equals("") || directory.equals("")) {
-					return;
-				}
-				Project project = new Project(name,directory);
-				YawpMain.setProject(project);
-				project.addPage(pageSize);
-				project.saveToDisk();
+						if (name.equals("") || directory.equals("")) {
+							return;
+						}
+						Project project = new Project(name,directory);
+						YawpMain.setProject(project);
+						project.addPage(pageSize);
+						project.saveToDisk();
 				
-				textfieldProjectName.setText("");
-				labelCurrentProjectDirectory.setText("");
+						textfieldProjectName.setText("");
+						labelCurrentProjectDirectory.setText("");
 				
-				tabWorkspace.setVisible(true);
-				tabWorkspace.bringToFront();
-				tabNewProject.setVisible(false);
-			}
-		});
+						tabWorkspace.setVisible(true);
+						tabWorkspace.bringToFront();
+						tabNewProject.setVisible(false);
+						
+					}
+				});
 		
-		dropdownPageSize.bringToFront();
+			dropdownPageSize.bringToFront();
 		
 		wrapper.flow(buttonSelectProjectDirectory);
 		wrapper.flow(labelCurrentProjectDirectory);
@@ -233,21 +310,6 @@ public class GUIControl {
 		tabNewProject.setVisible(false);
 	}
 	
-	
-	public void selectProjectDirectoryCallback(File selection) {
-		if (selection == null) {
-			return;
-		}
-		
-		Project project = loadProject(selection.getAbsolutePath());
-		
-		JSONObject lastOpened = new JSONObject();
-		lastOpened.setString("project.name", project.getName());
-		lastOpened.setString("project.directory",project.getDirectory());
-		
-		Config.setUserObject("lastProject", lastOpened);
-		Config.saveUserConfig();
-	}
 	
 	public static Project loadProject(String path) {
 		JSONObject projectJSON = p.loadJSONObject(path + "/project.json");
@@ -267,6 +329,22 @@ public class GUIControl {
 	}
 	
 	
+	public void selectProjectDirectoryCallback(File selection) {
+		if (selection == null) {
+			return;
+		}
+		
+		Project project = loadProject(selection.getAbsolutePath());
+		
+		JSONObject lastOpened = new JSONObject();
+		lastOpened.setString("project.name", project.getName());
+		lastOpened.setString("project.directory",project.getDirectory());
+		
+		Config.setUserObject("lastProject", lastOpened);
+		Config.saveUserConfig();
+	}
+	
+	
 	public void selectNewProjectDirectoryCallback(File selection) {
 		if (selection == null) {
 			return;
@@ -274,10 +352,23 @@ public class GUIControl {
 		cp5.get("labelCurrentProjectDirectory").setStringValue(selection.getAbsolutePath());
 	}
 	
+	
+	public void selectImageCallback(File selection) {
+		cp5.blockDraw = true;
+		YawpMain.getProject().loadImage(selection);
+		regenerateImageDataList.accept(yawp.YawpMain.getProject());
+		cp5.blockDraw = false;
+	}
+	
+	
 	private static void setupColors() {
-
 		colorGUIBG = Config.getColor("gui.colors.bg");
 		colorGUIMain = Config.getColor("gui.colors.main");
+		colorGUIBGLight = Config.getColor("gui.colors.bgLight");
+	}
+	
+	private static int tempCounter() {
+		return(++tempCounter);
 	}
 	
 }

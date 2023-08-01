@@ -1,5 +1,7 @@
 package yawp;
 
+import java.util.ArrayList;
+
 import controlP5.*;
 
 /**
@@ -10,6 +12,8 @@ import controlP5.*;
 public class GUIWrapper {
 
 	public Group group;
+	
+	public ArrayList<ControllerInterface<?>> children;
 
 	private int gutter = 10;
 	private int currentX = gutter;
@@ -25,26 +29,61 @@ public class GUIWrapper {
 		if (debug) {
 			System.out.println("Create Wrapper");
 		}
+		
+		children = new ArrayList<ControllerInterface<?>>();
 	}
 
 
 	public GUIWrapper flow(ControllerInterface<?> theElement) {
+		
+		boolean isGroup = theElement instanceof Group;
+		int eHeight;
+		if (isGroup) {
+			Group eGroup = (Group) theElement;
+			
+			eHeight = eGroup.getBackgroundHeight() + eGroup.getBarHeight();
+		}
+		else {
+			eHeight = theElement.getHeight();
+		}
+		
 		if (currentX + theElement.getWidth() + gutter > group.getWidth()) {
 			newLine();
 		}
 
-		if (theElement.getHeight() > lineHeight) {
-			lineHeight = theElement.getHeight();
+		if (eHeight > lineHeight) {
+			lineHeight = eHeight;
 		}
-		theElement.setPosition(currentX, currentY);
+		
+		if (isGroup) {
+			Group eGroup = (Group) theElement;
+			theElement.setPosition(currentX, currentY + eGroup.getBarHeight());
+		}
+		else {
+			theElement.setPosition(currentX, currentY);
+		}
 		
 		if (debug) {
 			System.out.println(theElement + " | Add at : " + currentX + "," + currentY);
 		}
 
 		currentX += theElement.getWidth() + gutter;
+		
+		children.add(theElement);
 
 		return this;
+	}
+	
+	
+	public void clear() {
+		for (ControllerInterface<?> ci : children) {
+			group.remove(ci);
+			ci.remove();
+		}
+		children.clear();
+		
+		currentX = gutter;
+		currentY = gutter;
 	}
 
 

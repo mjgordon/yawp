@@ -1,6 +1,7 @@
 {
 	"gui.colors.bg": "FF696D7D",
 	"gui.colors.main": "FF6F9283",
+	"gui.colors.bgLight": "FF797D8D",
 	"gui.colors.backup1":"0x8D9F87",
 	"gui.colors.backup2":"0xCDC6A5",
 	"gui.colors.backup3":"0xF0DCCA",
